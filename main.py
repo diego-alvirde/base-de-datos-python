@@ -25,20 +25,20 @@ class User(peewee.Model):
 
 
 if __name__ == '__main__':
-    # user = User.select().where(User.id == 3).get()  # Obtiene el primer usuario
-    # user = User.select().where(User.email >> None).get()  # null
-    # user = User.select().where(~User.email >> None).get()  # not null
-    # SELECT * FROM users WHERE username in (datos)
-    users = ['Eder', 'Alondra']
-    users = User.select().where(User.username << users)
+    count = User.select().count()
+    print(count)
+
+    users = User.select().where(User.id > 1).limit(2)
     for user in users:
         print(user)
 
-    # SELECT * FROM users WHERE username like 'texto%' .startswith
-    # SELECT * FROM users WHERE username like 'texto%' .endwith
-    # SELECT * FROM users WHERE username like '%texto%'
-    users = User.select().where(User.username.contains('Eder'))
+    users = User.select().where(User.id > 1).order_by(User.username.asc())
     for user in users:
         print(user)
-    # for user in users:
-    #    print(user)
+
+    users = User.select().where(User.id > 1).order_by(-User.username)
+    for user in users:
+        print(user)
+
+    last = User.select().order_by(User.id.desc()).limit(1).get()
+    print(last)
