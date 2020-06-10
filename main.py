@@ -16,6 +16,8 @@ SHOW_TABLES = "SHOW TABLES"
 
 INSERT_USER = "INSERT INTO users (username,password) VALUES ( '{username}', '{password}' )"
 
+SELECT_USER = "SELECT * FROM users WHERE id = {id}"
+
 if __name__ == '__main__':
     try:
         connection = MySQLdb.connect(HOST,USER, PASSWORD, DATABASE)
@@ -35,6 +37,15 @@ if __name__ == '__main__':
             connection.commit()
         except:
             connection.rollback()
+
+        query = SELECT_USER.format(id=1)
+        print(query)
+
+        cursor.execute(query)
+        users = cursor.fetchall()
+
+        for user in users:
+            print(user)
 
         """
         cursor.execute(SHOW_TABLES)
