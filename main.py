@@ -20,32 +20,22 @@ class User(peewee.Model):
         database = database
         db_table = 'users'
 
+    def __str__(self):
+        return self.username
+
 
 if __name__ == '__main__':
-    if User.table_exists() is False:
-        User.create_table()
+    #user = User.get(User.id == 1)
+    # print(user)
 
-    # 1
     """
-    user = User()
-    user.username = 'Diego'
-    user.password = 'password'
-    user.email = 'dalvirdem@mail.com'
+    user.active = False
     user.save()
+
+    query = User.update(active=True).where(User.id == 1)
+    query.execute()
     """
-    # 2
-    """
-    user = User(username='Josue', password='123456', email='jalvirdem@mail.com')
-    user.save()
-    """
-    # 3
-    """
-    user = {'username': 'Eder', 'password': 'eder'}
-    user = User(**user)
-    user.save()
-    """
-    # 4
-    #user = User.create(username='Armando', password='123456', email='armando@mail.com')
-    # 5
-    query = User.insert(username='Alondra', password='123456')
+
+    # user.delete_instance()
+    query = User.delete().where(User.id == 2)
     query.execute()
