@@ -25,17 +25,20 @@ class User(peewee.Model):
 
 
 if __name__ == '__main__':
-    #user = User.get(User.id == 1)
-    # print(user)
+    # user = User.select().where(User.id == 3).get()  # Obtiene el primer usuario
+    # user = User.select().where(User.email >> None).get()  # null
+    # user = User.select().where(~User.email >> None).get()  # not null
+    # SELECT * FROM users WHERE username in (datos)
+    users = ['Eder', 'Alondra']
+    users = User.select().where(User.username << users)
+    for user in users:
+        print(user)
 
-    """
-    user.active = False
-    user.save()
-
-    query = User.update(active=True).where(User.id == 1)
-    query.execute()
-    """
-
-    # user.delete_instance()
-    query = User.delete().where(User.id == 2)
-    query.execute()
+    # SELECT * FROM users WHERE username like 'texto%' .startswith
+    # SELECT * FROM users WHERE username like 'texto%' .endwith
+    # SELECT * FROM users WHERE username like '%texto%'
+    users = User.select().where(User.username.contains('Eder'))
+    for user in users:
+        print(user)
+    # for user in users:
+    #    print(user)
