@@ -24,27 +24,33 @@ class User(peewee.Model):
         return self.username
 
 
+class Store(peewee.Model):
+    user = peewee.ForeignKeyField(User, primary_key=True)
+    name = peewee.CharField(max_length=50)
+    addres = peewee.TextField()
+    active = peewee.BooleanField(default=True)
+    created_date = peewee.DateTimeField(default=datetime.datetime.now)
+
+    class Meta:
+        database = database
+        db_table = 'stores'
+
+    def __str__(self):
+        return self.name
+
+
 if __name__ == '__main__':
-    try:
-        user = User.get(User.id == 39)
-        print(user)
-    except User.DoesNotExist as error:
-        print("El usuario no existe")
+    """
+    if Store.table_exists():
+        Store.drop_table()
+    if User.table_exists():
+        User.drop_table()
+    User.create_table()
+    Store.create_table()
 
-    user = User.select().where(User.id == 3).first()
-    if user:
-        print("El usuario existe")
-    else:
-        print("El usuario no existe")
-
-    count = User.select().where(User.id == 3).count()
-    if(count):
-        print("El usuario existe")
-    else:
-        print("El usuario no existe")
-
-    flag = User.select().where(User.id == 3).exists()
-    if(flag):
-        print("El usuario existe")
-    else:
-        print("El usuario no existe")
+    user = User.create(username='Diego', password='diego', email='diego@mail.com')
+    store = Store.create(name='Adidas', addres='Conocida', user=user)
+    """
+    tienda = Store.get(Store.user_id == 1)
+    print(tienda)
+    print(tienda.user)
