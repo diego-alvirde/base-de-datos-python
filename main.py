@@ -25,7 +25,7 @@ class User(peewee.Model):
 
 
 class Store(peewee.Model):
-    user = peewee.ForeignKeyField(User, primary_key=True)
+    user = peewee.ForeignKeyField(User, related_name='stores')
     name = peewee.CharField(max_length=50)
     addres = peewee.TextField()
     active = peewee.BooleanField(default=True)
@@ -39,18 +39,28 @@ class Store(peewee.Model):
         return self.name
 
 
-if __name__ == '__main__':
-    """
+def create_table():
     if Store.table_exists():
         Store.drop_table()
     if User.table_exists():
         User.drop_table()
+
     User.create_table()
     Store.create_table()
 
-    user = User.create(username='Diego', password='diego', email='diego@mail.com')
-    store = Store.create(name='Adidas', addres='Conocida', user=user)
+
+if __name__ == '__main__':
     """
-    tienda = Store.get(Store.user_id == 1)
-    print(tienda)
-    print(tienda.user)
+    create_table()
+    user = User.create(username='Diego', password='diego', email='diego@mail.com')
+    store1 = Store.create(name='Adidas', addres='Conocida', user=user)
+    store2 = Store.create(name='Nike', addres='Conocida', user=user)
+    """
+    user = User.get(User.id == 1)
+    print(user)
+
+    for store in user.stores:
+        print(store)
+
+    store = Store.get(Store.id == 1)
+    print(store.user)
