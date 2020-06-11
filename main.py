@@ -25,20 +25,26 @@ class User(peewee.Model):
 
 
 if __name__ == '__main__':
-    count = User.select().count()
-    print(count)
-
-    users = User.select().where(User.id > 1).limit(2)
-    for user in users:
+    try:
+        user = User.get(User.id == 39)
         print(user)
+    except User.DoesNotExist as error:
+        print("El usuario no existe")
 
-    users = User.select().where(User.id > 1).order_by(User.username.asc())
-    for user in users:
-        print(user)
+    user = User.select().where(User.id == 3).first()
+    if user:
+        print("El usuario existe")
+    else:
+        print("El usuario no existe")
 
-    users = User.select().where(User.id > 1).order_by(-User.username)
-    for user in users:
-        print(user)
+    count = User.select().where(User.id == 3).count()
+    if(count):
+        print("El usuario existe")
+    else:
+        print("El usuario no existe")
 
-    last = User.select().order_by(User.id.desc()).limit(1).get()
-    print(last)
+    flag = User.select().where(User.id == 3).exists()
+    if(flag):
+        print("El usuario existe")
+    else:
+        print("El usuario no existe")
