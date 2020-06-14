@@ -39,7 +39,25 @@ class Store(peewee.Model):
         return self.name
 
 
+class Product(peewee.Model):
+    name = peewee.CharField(max_length=100)
+    description = peewee.TextField()
+    store = peewee.ForeignKeyField(Store, related_name='products')
+    price = peewee.DecimalField(max_digits=5, decimal_places=2)  # 100.00
+    stock = peewee.IntegerField()
+    created_date = peewee.DateTimeField(default=datetime.datetime.now)
+
+    class Meta:
+        database = database
+        db_table = 'products'
+
+    def __str__(self):
+        return '{name} - ${price}'.format(name=self.name, price=self.price)
+
+
 def create_table():
+    if Product.table_exists():
+        Product.drop_table()
     if Store.table_exists():
         Store.drop_table()
     if User.table_exists():
@@ -47,20 +65,45 @@ def create_table():
 
     User.create_table()
     Store.create_table()
+    Product.create_table()
+
+
+def insert_users():
+    User.create(username='Diego', password='diego', email='diego@mail.com')
+    User.create(username='Josue', password='josue', email='josue@mail.com')
+
+
+def insert_stores():
+    Store.create(user_id=1, name='Adidas', addres='Conocida')
+    Store.create(user_id=2, name='Nike', addres='Conocida')
+
+
+def insert_products():
+    Product.create(store_id=1, name='Iniki', description='Tennis Iniki', price=100, stock=5)
+    Product.create(store_id=1, name='Buzenits', description='Tennis Buzenits', price=100, stock=5)
+    Product.create(store_id=1, name='Continental',
+                   description='Tennis Continental', price=100, stock=5)
+
+    Product.create(store_id=2, name='Air', description='Tennis Air', price=100, stock=5)
+    Product.create(store_id=2, name='Jordan', description='Tennis Jordan', price=100, stock=5)
+    Product.create(store_id=2, name='Venom', description='Tennis Venom', price=100, stock=5)
+
+
+def create_schema():
+    create_table()
+    insert_users()
+    insert_stores()
+    insert_products()
 
 
 if __name__ == '__main__':
-    """
-    create_table()
-    user = User.create(username='Diego', password='diego', email='diego@mail.com')
-    store1 = Store.create(name='Adidas', addres='Conocida', user=user)
-    store2 = Store.create(name='Nike', addres='Conocida', user=user)
-    """
-    user = User.get(User.id == 1)
-    print(user)
+    query = (
+        Product.select()
+        .join(Store)
+        .join(User)
+        .where(User.id == 1)
+        .order_by(Product.price.desc())
+    )
 
-    for store in user.stores:
-        print(store)
-
-    store = Store.get(Store.id == 1)
-    print(store.user)
+    for product in query:
+        print(product)
