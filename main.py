@@ -1,61 +1,12 @@
 import peewee
-import datetime
-
-HOST = 'localhost'
-USER = 'root'
-PASSWORD = ''
-DATABASE = 'minicurso_python'
-
-database = peewee.MySQLDatabase(DATABASE, host=HOST, port=3306, user=USER, password=PASSWORD)
-
-
-class User(peewee.Model):
-    username = peewee.CharField(unique=True, max_length=50, index=True)
-    password = peewee.CharField(max_length=50)
-    email = peewee.CharField(max_length=50, null=True)
-    active = peewee.BooleanField(default=True)
-    created_date = peewee.DateTimeField(default=datetime.datetime.now)
-
-    class Meta:
-        database = database
-        db_table = 'users'
-
-    def __str__(self):
-        return self.username
-
-
-class Store(peewee.Model):
-    user = peewee.ForeignKeyField(User, related_name='stores')
-    name = peewee.CharField(max_length=50)
-    addres = peewee.TextField()
-    active = peewee.BooleanField(default=True)
-    created_date = peewee.DateTimeField(default=datetime.datetime.now)
-
-    class Meta:
-        database = database
-        db_table = 'stores'
-
-    def __str__(self):
-        return self.name
-
-
-class Product(peewee.Model):
-    name = peewee.CharField(max_length=100)
-    description = peewee.TextField()
-    store = peewee.ForeignKeyField(Store, related_name='products')
-    price = peewee.DecimalField(max_digits=5, decimal_places=2)  # 100.00
-    stock = peewee.IntegerField()
-    created_date = peewee.DateTimeField(default=datetime.datetime.now)
-
-    class Meta:
-        database = database
-        db_table = 'products'
-
-    def __str__(self):
-        return '{name} - ${price}'.format(name=self.name, price=self.price)
+from models import (User, Store, Product, Category, CategoriesProduct)
 
 
 def create_table():
+    if CategoriesProduct.table_exists():
+        CategoriesProduct.drop_table()
+    if Category.table_exists():
+        Category.drop_table()
     if Product.table_exists():
         Product.drop_table()
     if Store.table_exists():
@@ -66,6 +17,8 @@ def create_table():
     User.create_table()
     Store.create_table()
     Product.create_table()
+    Category.create_table()
+    CategoriesProduct.create_table()
 
 
 def insert_users():
@@ -89,21 +42,42 @@ def insert_products():
     Product.create(store_id=2, name='Venom', description='Tennis Venom', price=100, stock=5)
 
 
+def insert_categories():
+    Category.create(name='Liquidos', description='liquidos')
+    Category.create(name='Embutidos', description='embutidos')
+    Category.create(name='Snacks', description='snacks')
+    Category.create(name='Aderezos', description='aderezos')
+    Category.create(name='Carnes', description='carnes')
+
+
+def insert_categories_product():
+    CategoriesProduct.create(category_id=1, product_id=5)
+    CategoriesProduct.create(category_id=1, product_id=5)
+    CategoriesProduct.create(category_id=1, product_id=5)
+
+    CategoriesProduct.create(category_id=2, product_id=4)
+
+    CategoriesProduct.create(category_id=3, product_id=3)
+
+    CategoriesProduct.create(category_id=4, product_id=2)
+    CategoriesProduct.create(category_id=4, product_id=2)
+
+    CategoriesProduct.create(category_id=5, product_id=1)
+
+
 def create_schema():
     create_table()
     insert_users()
     insert_stores()
     insert_products()
+    insert_categories()
+    insert_categories_product()
 
 
 if __name__ == '__main__':
-    query = (
-        Product.select()
-        .join(Store)
-        .join(User)
-        .where(User.id == 1)
-        .order_by(Product.price.desc())
-    )
+    categories = Category.select()
+    for category in categories:
+        print(">>" + str(category))
 
-    for product in query:
-        print(product)
+        for product in category.products:
+            print(product)
