@@ -75,9 +75,5 @@ def create_schema():
 
 
 if __name__ == '__main__':
-    categories = Category.select()
-    for category in categories:
-        print(">>" + str(category))
-
-        for product in category.products:
-            print(product)
+    buze = Product.get(Product.name == 'Buzenits')
+    buze.delete_instance(recursive=True)
